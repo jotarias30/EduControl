@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-hero"><div><span class="eyebrow">PANEL DOCENTE</span><h1>Hola, {{current_user.name.split()[0]}} 👋</h1><p>Organiza tus grupos, asistencia y evaluaciones desde un solo lugar.</p></div><div class="hero-date"><i class="bi bi-calendar3"></i> {{ now if now is defined else 'Año lectivo' }}</div></div>
+<div class="row g-3 mb-4">
+<div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon blue"><i class="bi bi-people-fill"></i></span><div><strong>{{students}}</strong><small>Estudiantes activos</small></div></div></div>
+<div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon green"><i class="bi bi-collection-fill"></i></span><div><strong>{{groups|length}}</strong><small>Grupos</small></div></div></div>
+{% if teachers is not none %}<div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon purple"><i class="bi bi-person-badge-fill"></i></span><div><strong>{{teachers}}</strong><small>Docentes activos</small></div></div></div>{% endif %}
+<div class="col-6 col-xl-3"><div class="stat-card"><span class="stat-icon orange"><i class="bi bi-lightning-charge-fill"></i></span><div><strong>Hoy</strong><small>Listo para trabajar</small></div></div></div>
+</div>
+<div class="section-title"><div><h2>{% if current_user.role=='teacher' %}Mis grupos{% else %}Grupos del centro educativo{% endif %}</h2><p>Selecciona una materia para tomar asistencia o registrar evaluaciones.</p></div></div>
+<div class="row g-4">{% for g in groups %}<div class="col-md-6 col-xl-4"><div class="group-card"><div class="group-head"><span class="group-badge">{{g.name}}</span><span>{{g.year}}</span></div><h3>Grupo {{g.name}}</h3>{% if current_user.role!='teacher' %}<p class="teacher-line"><i class="bi bi-person"></i> {{g.teacher.name if g.teacher else 'Sin docente asignado'}}</p>{% endif %}<a class="btn btn-soft w-100" href="{{url_for('subjects')}}"><i class="bi bi-journal-text"></i> Ver materias y acciones</a></div></div>{% else %}<div class="empty-state"><i class="bi bi-collection"></i><h3>Aún no hay grupos</h3><p>Crea o asigna un grupo para comenzar.</p></div>{% endfor %}</div>
+{% endblock %}

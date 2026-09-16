@@ -1,0 +1,18 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-head"><div><span class="eyebrow">ASISTENCIA</span><h1>{{subject.name}} · {{subject.group.name}}</h1><p>Marca únicamente las excepciones; todos aparecen presentes por defecto.</p></div><a class="btn btn-light border" href="{{url_for('subjects')}}"><i class="bi bi-arrow-left"></i> Materias</a></div>
+<form method="post" id="attendanceForm">
+<div class="toolbar-card"><div><label class="form-label">Fecha</label><input class="form-control" style="max-width:210px" type="date" name="day" value="{{day}}"></div><button type="button" class="btn btn-success rounded-pill px-4" onclick="markAll('P')"><i class="bi bi-check2-all"></i> Todos presentes</button></div>
+<div class="attendance-summary"><span class="sum present"><b id="countP">0</b> Presentes</span><span class="sum absent"><b id="countA">0</b> Ausentes</span><span class="sum late"><b id="countT">0</b> Tardías</span><span class="sum justified"><b id="countJ">0</b> Justificadas</span></div>
+<div class="student-list">{% for s in students %}<div class="student-attendance"><div class="student-info"><span class="student-avatar">{{s.full_name[:1]|upper}}</span><div><b>{{s.full_name}}</b><small>{{s.identification or 'Estudiante'}}</small></div></div><div class="status-buttons" data-student="{{s.id}}">
+{% set val=existing.get(s.id,'P') %}<input type="hidden" name="s_{{s.id}}" value="{{val}}" class="status-input">
+<button type="button" class="status-btn p {% if val=='P' %}active{% endif %}" data-value="P"><i class="bi bi-check-circle-fill"></i><span>Presente</span></button>
+<button type="button" class="status-btn a {% if val=='A' %}active{% endif %}" data-value="A"><i class="bi bi-x-circle-fill"></i><span>Ausente</span></button>
+<button type="button" class="status-btn t {% if val=='T' %}active{% endif %}" data-value="T"><i class="bi bi-clock-fill"></i><span>Tardía</span></button>
+<button type="button" class="status-btn j {% if val=='J' %}active{% endif %}" data-value="J"><i class="bi bi-file-earmark-check-fill"></i><span>Justificada</span></button>
+</div></div>{% else %}<div class="empty-state"><p>No hay estudiantes activos en este grupo.</p></div>{% endfor %}</div>
+<div class="sticky-save"><button class="btn btn-primary btn-lg rounded-pill px-5"><i class="bi bi-cloud-check-fill"></i> Guardar asistencia</button></div></form>
+{% endblock %}{% block scripts %}<script>
+function refreshCounts(){let c={P:0,A:0,T:0,J:0};document.querySelectorAll('.status-input').forEach(i=>c[i.value]++);Object.keys(c).forEach(k=>document.getElementById('count'+k).textContent=c[k]);}
+document.querySelectorAll('.status-buttons').forEach(g=>g.querySelectorAll('.status-btn').forEach(b=>b.addEventListener('click',()=>{g.querySelector('.status-input').value=b.dataset.value;g.querySelectorAll('.status-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');refreshCounts();})));
+function markAll(v){document.querySelectorAll('.status-buttons').forEach(g=>{g.querySelector('.status-input').value=v;g.querySelectorAll('.status-btn').forEach(x=>x.classList.toggle('active',x.dataset.value===v));});refreshCounts();} refreshCounts();
+</script>{% endblock %}
